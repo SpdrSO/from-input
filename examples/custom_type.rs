@@ -35,9 +35,9 @@ impl FromInput for Coords {
             ));
         }
 
-        let x = parts[0].parse::<i32>()
+        let x = parts[0].parse()
             .map_err(|e| from_input::FromInputError::Parse(format!("Invalid x: {}", e)))?;
-        let y = parts[1].parse::<i32>()
+        let y = parts[1].parse()
             .map_err(|e| from_input::FromInputError::Parse(format!("Invalid y: {}", e)))?;
 
         Ok(Self::new(x, y))
