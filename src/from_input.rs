@@ -1,14 +1,34 @@
 use std::{
-    io::{stdin, stdout, Write},
+    io::{stdin, stdout, Write, Error as IoErr},
     str::FromStr,
 };
 
-use crate::errors::FromInputError;
+use crate::error::FromInputError;
 
 pub trait FromInput: Sized {
     type ParseErr;
 
     fn from_input(prompt: &str) -> Result<Self, FromInputError<Self::ParseErr>>;
+
+    fn from_input_retry<IoErrHandle, ParseErrHandle>(
+        prompt: &str,
+        mut io_err_handle: IoErrHandle,
+        mut parse_err_handle: ParseErrHandle,
+    ) -> Self
+    where
+        IoErrHandle: FnMut(IoErr),
+        ParseErrHandle: FnMut(&Self::ParseErr),
+    {
+        loop {
+            match Self::from_input(prompt) {
+                Ok(v) => return v,
+                Err(e) => match e {
+                    FromInputError::Io(io_err) => io_err_handle(io_err),
+                    FromInputError::Parse(parse_err) => parse_err_handle(&parse_err),
+                },
+            }
+        }
+    }
 }
 
 impl<T: FromStr> FromInput for T {

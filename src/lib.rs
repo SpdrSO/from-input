@@ -1,5 +1,5 @@
 mod from_input;
-mod errors;
+mod error;
 
 pub use from_input::FromInput;
-pub use errors::FromInputError;
+pub use error::FromInputError;
