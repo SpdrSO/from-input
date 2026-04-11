@@ -9,12 +9,8 @@ fn main() {
     loop {
         let action = Action::from_input_retry(
             "Choose an action (+ - * / q) >> ",
-            |e| {
-                eprintln!("[!] {}", e);
-                exit(1);
-            },
             |_| eprintln!("[!] Invalid action. Please try again."),
-        );
+        ).unwrap();
 
         if action == Action::Quit {
             exit(0);
@@ -22,20 +18,12 @@ fn main() {
 
         let first = f64::from_input_retry(
             "Input first number >> ",
-            |e| {
-                eprintln!("[!] {}", e);
-                exit(1);
-            },
             |_| eprintln!("[!] Invalid number. Please try again."),
-        );
+        ).unwrap();
         let second = f64::from_input_retry(
             "Input second number >> ",
-            |e| {
-                eprintln!("[!] {}", e);
-                exit(1);
-            },
             |_| eprintln!("[!] Invalid number. Please try again."),
-        );
+        ).unwrap();
 
         let result = match action {
             Action::Add => first + second,

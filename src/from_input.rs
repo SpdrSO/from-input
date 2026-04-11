@@ -10,20 +10,18 @@ pub trait FromInput: Sized {
 
     fn from_input(prompt: &str) -> Result<Self, FromInputError<Self::ParseErr>>;
 
-    fn from_input_retry<IoErrHandle, ParseErrHandle>(
+    fn from_input_retry<ParseErrHandle>(
         prompt: &str,
-        mut io_err_handle: IoErrHandle,
         mut parse_err_handle: ParseErrHandle,
-    ) -> Self
+    ) -> Result<Self, IoErr>
     where
-        IoErrHandle: FnMut(IoErr),
         ParseErrHandle: FnMut(&Self::ParseErr),
     {
         loop {
             match Self::from_input(prompt) {
-                Ok(v) => return v,
+                Ok(v) => return Ok(v),
                 Err(e) => match e {
-                    FromInputError::Io(io_err) => io_err_handle(io_err),
+                    FromInputError::Io(io_err) => return Err(io_err),
                     FromInputError::Parse(parse_err) => parse_err_handle(&parse_err),
                 },
             }
